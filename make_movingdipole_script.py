@@ -1,29 +1,34 @@
 #!/usr/bin/python
 
-import sys
+import os, sys
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
 # see http://wiki.besa.de/index.php?title=Moving_Dipole_Fit
 
-if len(sys.argv) < 3:
-    print("Usage: python make_movingdipole_script.py <start_ms> <spacing_ms> <numdipoles> [fnamestem]")
+if len(sys.argv) < 4:
+    print("Usage: python make_movingdipole_script.py <start_ms> <spacing_ms> <patientnum> [fnamestem] [numdipoles]")
     quit()
     
 start_offset_ms = int(sys.argv[1])
 spacing_ms = int(sys.argv[2])
+patient_num = sys.argv[3]
 
-if len(sys.argv)>3:
-    num_dipoles = int(sys.argv[3])
-else:
-    num_dipoles = 11
+output_path = os.path.join("/Users/aaron/Documents/BESA/megdata", patient_num, "figs")
+if not os.path.isdir(output_path):
+    os.makedirs(output_path)
 
 if len(sys.argv)>4:
     fname_stem = sys.argv[4]
 else:
     fname_stem = "movingdipole"
-fname = fname_stem + ".bbat"
+fname = os.path.join(output_path, fname_stem + "_" + patient_num + ".bbat")
+
+if len(sys.argv)>5:
+    num_dipoles = int(sys.argv[5])
+else:
+    num_dipoles = 11
 
 gradient = np.linspace(0,1,num_dipoles)
 cmap = mpl.colormaps["jet"]
@@ -64,4 +69,4 @@ part3 = "SAsetOrActivateSource(All,On)\nSAfitInterval(" + str(start_offset_ms) +
 of.write(part3)
 
 of.close()
-plt.savefig(fname_stem + ".png")
+plt.savefig(os.path.join(output_path, fname_stem + "_" + patient_num + ".png"))
