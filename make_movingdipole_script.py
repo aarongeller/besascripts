@@ -8,7 +8,7 @@ import numpy as np
 # see http://wiki.besa.de/index.php?title=Moving_Dipole_Fit
 
 if len(sys.argv) < 3:
-    print("Usage: python make_movingdipole_script.py <start_ms> <spacing_ms> <numdipoles> [fname]")
+    print("Usage: python make_movingdipole_script.py <start_ms> <spacing_ms> <numdipoles> [fnamestem]")
     quit()
     
 start_offset_ms = int(sys.argv[1])
@@ -20,9 +20,10 @@ else:
     num_dipoles = 11
 
 if len(sys.argv)>4:
-    fname = sys.argv[4]
+    fname_stem = sys.argv[4]
 else:
-    fname = "movingdipole.bbat"
+    fname_stem = "movingdipole"
+fname = fname_stem + ".bbat"
 
 gradient = np.linspace(0,1,num_dipoles)
 cmap = mpl.colormaps["jet"]
@@ -63,4 +64,4 @@ part3 = "SAsetOrActivateSource(All,On)\nSAfitInterval(" + str(start_offset_ms) +
 of.write(part3)
 
 of.close()
-plt.show()
+plt.savefig(fname_stem + ".png")
