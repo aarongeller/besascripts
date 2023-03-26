@@ -40,7 +40,7 @@ plt.xlabel("Time (ms)")
 
 decimal_colors = []
 
-for i in range(chosen_colors_mat.shape[0]):
+for i in range(num_dipoles):
     # besa appears to use decimal BGR code, i.e. (2^16)*blue + (2^8)*green + red,
     # where blue, green, red are integers between 0 and 255 
 
