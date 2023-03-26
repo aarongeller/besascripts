@@ -2,6 +2,7 @@
 
 import sys
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 
 # see http://wiki.besa.de/index.php?title=Moving_Dipole_Fit
@@ -26,6 +27,17 @@ else:
 gradient = np.linspace(0,1,num_dipoles)
 cmap = mpl.colormaps["jet"]
 chosen_colors_mat = cmap(gradient)
+
+# make a colorbar figure that shows the color -> time mapping
+times = []
+for i in range(num_dipoles):
+    times.append(start_offset_ms + i*spacing_ms)
+times_str = list(map(lambda x: str(x), times))
+plt.imshow(np.vstack((gradient, gradient)), aspect=0.5, cmap=cmap)
+plt.xticks(np.arange(0,num_dipoles), times_str)
+plt.yticks([])
+plt.xlabel("Time (ms)")
+
 decimal_colors = []
 
 for i in range(chosen_colors_mat.shape[0]):
@@ -46,12 +58,13 @@ of = open(fname, 'w')
 of.write(part1)
 
 for i in range(num_dipoles-1):
-    ms_time = start_offset_ms + (i+1)*spacing_ms
     colornum = decimal_colors[i+1]
-    part2 = "SAaddSource(Dipole,UnitSphere,0.000,0.000,0.000,0.000,0.000,1.000,-," + str(colornum) + ",FitEnable,FitDisableOtherSources)\nSAsetCursor(" + str(ms_time) + ",NoDrawMap)\nSAfit(Sources)\nSAsetOrActivateSource(Last,Off)\n"
+    part2 = "SAaddSource(Dipole,UnitSphere,0.000,0.000,0.000,0.000,0.000,1.000,-," + str(colornum) + ",FitEnable,FitDisableOtherSources)\nSAsetCursor(" + str(times[i+1]) + ",NoDrawMap)\nSAfit(Sources)\nSAsetOrActivateSource(Last,Off)\n"
     of.write(part2)
 
 part3 = "SAsetOrActivateSource(All,On)\nSAfitInterval(" + str(start_offset_ms) + "," + str(start_offset_ms + spacing_ms*(num_dipoles - 1)) + ",FitInterval)\nSAsetOrActivateSource(1,Enable)\nSAdisplayMRI(On,SmallWindow,MultipleHeads)\n"
 of.write(part3)
 
 of.close()
+
+plt.show()
