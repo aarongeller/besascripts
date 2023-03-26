@@ -38,19 +38,16 @@ plt.xticks(np.arange(0,num_dipoles), times_str)
 plt.yticks([])
 plt.xlabel("Time (ms)")
 
+# convert chosen colors to BGR for BESA
+# besa appears to use decimal BGR code, i.e. (2^16)*blue + (2^8)*green + red,
+# where blue, green, red are integers between 0 and 255 
 decimal_colors = []
-
 for i in range(num_dipoles):
-    # besa appears to use decimal BGR code, i.e. (2^16)*blue + (2^8)*green + red,
-    # where blue, green, red are integers between 0 and 255 
-
     red_dec = int(round(255*chosen_colors_mat[i,0]))
     green_dec = int(round(255*chosen_colors_mat[i,1]))
     blue_dec = int(round(255*chosen_colors_mat[i,2]))
 
     decimal_colors.append(blue_dec*(2**16) + green_dec*(2**8) + red_dec)
-
-# print(decimal_colors)
     
 part1 = "MAINFilter(LC:4.00-6dB-f,HC:40.00-24dB-z,NF:off,BP:off)\nMAINMarkBlock(WholeSegment,-,1,SendToSA)\nSAsetDefaultSourceType(Dipole)\nSAchannelTypeForFit(GRA)\nSAFitConstraint(RVOn:1.00,ENOff:1.00,MDOn:1.00,IMOff:1.00)\nSAaddSource(Dipole,UnitSphere,0.000,0.000,0.000,0.000,0.000,1.000,-," + str(decimal_colors[0]) + ",FitEnable,FitDisableOtherSources,BR29.bsa,1.00,30.00,Noise_)\nSAsetOrActivateSource(1,Disable)\nSAHeadModel(0)\nSAsetOrActivateSource(1,Enable)\nSAsetCursor(" + str(start_offset_ms) + ",NoDrawMap)\nSAfit(Sources)\nSAsetOrActivateSource(Last,Off)\n"
 
@@ -66,5 +63,4 @@ part3 = "SAsetOrActivateSource(All,On)\nSAfitInterval(" + str(start_offset_ms) +
 of.write(part3)
 
 of.close()
-
 plt.show()
