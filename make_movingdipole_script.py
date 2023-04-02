@@ -61,8 +61,7 @@ of = open(fname, 'w')
 of.write(part1)
 
 for i in range(num_dipoles-1):
-    colornum = decimal_colors[i+1]
-    part2 = "SAaddSource(Dipole,UnitSphere,0.000,0.000,0.000,0.000,0.000,1.000,-," + str(colornum) + ",FitEnable,FitDisableOtherSources)\nSAsetCursor(" + str(times[i+1]) + ",NoDrawMap)\nSAfit(Sources)\nSAsetOrActivateSource(Last,Off)\n"
+    part2 = "SAaddSource(Dipole,UnitSphere,0.000,0.000,0.000,0.000,0.000,1.000,-," + str(decimal_colors[i+1]) + ",FitEnable,FitDisableOtherSources)\nSAsetCursor(" + str(times[i+1]) + ",NoDrawMap)\nSAfit(Sources)\nSAsetOrActivateSource(Last,Off)\n"
     of.write(part2)
 
 part3 = "SAsetOrActivateSource(All,On)\nSAfitInterval(" + str(start_offset_ms) + "," + str(start_offset_ms + spacing_ms*(num_dipoles - 1)) + ",FitInterval)\nSAsetOrActivateSource(1,Enable)\nSAdisplayMRI(On,SmallWindow,MultipleHeads)\n"
