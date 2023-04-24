@@ -8,9 +8,12 @@ import numpy as np
 # see http://wiki.besa.de/index.php?title=Moving_Dipole_Fit
 
 if len(sys.argv) < 4:
-    print("Usage: python make_movingdipole_script.py <start_ms> <spacing_ms> <patientnum> [MEGorEEG] [fnamestem] [numdipoles]")
+    print("Usage: python make_movingdipole_script.py <start_ms> <spacing_ms> <patientnum> [MEGorEEG] [fnamestem] [numdipoles] [headmodel]")
     quit()
-    
+
+# SAHeadModel: 0 = 4 shell ellipsoidal / MEG spherical, 1 = Individual FEM, 2 = Individual BEM, 3 = Realistic approximation,
+# 4 = Age appropriate template models, 5 = Polynomial 4 shells, 5 = 3 shell Ary approximation, 6 = Homogeneous sphere
+
 start_offset_ms = int(sys.argv[1])
 spacing_ms = int(sys.argv[2])
 patient_num = sys.argv[3]
@@ -35,6 +38,14 @@ if len(sys.argv)>6:
     num_dipoles = int(sys.argv[6])
 else:
     num_dipoles = 11
+
+if len(sys.argv)>7:
+    headmodel = sys.argv[7]
+else:
+    if eeg_or_meg=="EEG":
+        headmodel = 2 # if modeling EEG, default to BEM
+    else:
+        headmodel = 0 # if modeling MEG, default to spherical
 
 gradient = np.linspace(0,1,num_dipoles)
 cmap = mpl.colormaps["jet"]
@@ -61,7 +72,7 @@ for i in range(num_dipoles):
 
     decimal_colors.append(blue_dec*(2**16) + green_dec*(2**8) + red_dec)
     
-part1 = "MAINFilter(LC:4.00-6dB-f,HC:40.00-24dB-z,NF:off,BP:off)\nMAINMarkBlock(WholeSegment,-,1,SendToSA)\nSAsetDefaultSourceType(Dipole)\nSAchannelTypeForFit(" + eeg_or_meg + ")\nSAFitConstraint(RVOn:1.00,ENOff:1.00,MDOn:1.00,IMOff:1.00)\nSAaddSource(Dipole,UnitSphere,0.000,0.000,0.000,0.000,0.000,1.000,-," + str(decimal_colors[0]) + ",FitEnable,FitDisableOtherSources,BR29.bsa,1.00,30.00,Noise_)\nSAsetOrActivateSource(1,Disable)\nSAHeadModel(0)\nSAsetOrActivateSource(1,Enable)\nSAsetCursor(" + str(start_offset_ms) + ",NoDrawMap)\nSAfit(Sources)\nSAsetOrActivateSource(Last,Off)\n"
+part1 = "MAINFilter(LC:4.00-6dB-f,HC:40.00-24dB-z,NF:off,BP:off)\nMAINMarkBlock(WholeSegment,-,1,SendToSA)\nSAsetDefaultSourceType(Dipole)\nSAchannelTypeForFit(" + eeg_or_meg + ")\nSAFitConstraint(RVOn:1.00,ENOff:1.00,MDOn:1.00,IMOff:1.00)\nSAaddSource(Dipole,UnitSphere,0.000,0.000,0.000,0.000,0.000,1.000,-," + str(decimal_colors[0]) + ",FitEnable,FitDisableOtherSources,BR29.bsa,1.00,30.00,Noise_)\nSAsetOrActivateSource(1,Disable)\nSAHeadModel(" + headmodel + ")\nSAsetOrActivateSource(1,Enable)\nSAsetCursor(" + str(start_offset_ms) + ",NoDrawMap)\nSAfit(Sources)\nSAsetOrActivateSource(Last,Off)\n"
 
 of = open(bbat_fname, 'w')
 of.write(part1)
