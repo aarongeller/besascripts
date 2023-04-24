@@ -43,9 +43,9 @@ if len(sys.argv)>7:
     headmodel = sys.argv[7]
 else:
     if eeg_or_meg=="EEG":
-        headmodel = 2 # if modeling EEG, default to BEM
+        headmodel = "2" # if modeling EEG, default to BEM
     else:
-        headmodel = 0 # if modeling MEG, default to spherical
+        headmodel = "0" # if modeling MEG, default to spherical
 
 gradient = np.linspace(0,1,num_dipoles)
 cmap = mpl.colormaps["jet"]
