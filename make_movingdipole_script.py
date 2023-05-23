@@ -7,20 +7,22 @@ import numpy as np
 
 # see http://wiki.besa.de/index.php?title=Moving_Dipole_Fit
 
-if len(sys.argv) < 4:
-    print("Usage: python make_movingdipole_script.py <start_ms> <spacing_ms> <patientnum> [MEGorEEG] [fnamestem] [numdipoles] [headmodel]")
+if len(sys.argv) < 3:
+    print("Usage: python make_movingdipole_script.py <patientnum> <start_ms> [spacing_ms] [MEGorEEG] [fnamestem] [numdipoles] [headmodel]")
+    print("Default values: spacing_ms=3, MEGorEEG=\"GRA\", fnamestem=\"movingdipole\", numdipoles=11, headmodel=0 for MEG, 2 for EEG")
     quit()
 
-# SAHeadModel: 0 = 4 shell ellipsoidal / MEG spherical, 1 = Individual FEM, 2 = Individual BEM, 3 = Realistic approximation,
-# 4 = Age appropriate template models, 5 = Polynomial 4 shells, 5 = 3 shell Ary approximation, 6 = Homogeneous sphere
-
-start_offset_ms = int(sys.argv[1])
-spacing_ms = int(sys.argv[2])
-patient_num = sys.argv[3]
-
+patient_num = sys.argv[1]
 output_path = os.path.join("/Users/aaron/Documents/BESA/megdata", patient_num, "figs")
 if not os.path.isdir(output_path):
     os.makedirs(output_path)
+
+start_offset_ms = int(sys.argv[2])
+
+if len(sys.argv)>3:
+    spacing_ms = int(sys.argv[3])
+else:
+    spacing_ms = 3
 
 if len(sys.argv)>4:
     eeg_or_meg = sys.argv[4]
@@ -40,6 +42,8 @@ else:
     num_dipoles = 11
 
 if len(sys.argv)>7:
+    # SAHeadModel: 0 = 4 shell ellipsoidal / MEG spherical, 1 = Individual FEM, 2 = Individual BEM, 3 = Realistic approximation,
+    # 4 = Age appropriate template models, 5 = Polynomial 4 shells, 5 = 3 shell Ary approximation, 6 = Homogeneous sphere
     headmodel = sys.argv[7]
 else:
     if eeg_or_meg=="EEG":
