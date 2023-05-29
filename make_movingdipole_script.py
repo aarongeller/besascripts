@@ -13,7 +13,11 @@ if len(sys.argv) < 3:
     quit()
 
 patient_num = sys.argv[1]
-output_path = os.path.join("/Users/aaron/Documents/BESA/megdata", patient_num, "figs")
+if sys.platform=='darwin':
+    pathstem = "/Users/aaron/Documents/BESA/megdata"
+else:
+    pathstem = "/cygdrive/d/megdata"
+output_path = os.path.join(pathstem, patient_num, "figs")
 if not os.path.isdir(output_path):
     os.makedirs(output_path)
 
